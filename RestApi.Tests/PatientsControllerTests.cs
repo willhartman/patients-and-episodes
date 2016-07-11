@@ -9,6 +9,7 @@ using System.Linq;
 using RestApi.Controllers;
 using System.Web.Http;
 using System.Net;
+using Microsoft.Practices.Unity;
 
 namespace RestApi.Tests
 {
@@ -20,23 +21,8 @@ namespace RestApi.Tests
         [TestInitialize]
         public void Initialize()
         {
-            // Mock the DbContext.
-            var mockDbContext = new Mock<IDbContext>();
-
-            // Mock the DbSets.
-            var mockPatientDbSet = new Mock<DbSet<Patient>>();
-            var mockEpisodesDbSet = new Mock<DbSet<Episode>>();
-
-            // Configure mock DbSets IQueryable to use test entities.
-            ConfigureMockDbSet(mockPatientDbSet, GetTestPatients());
-            ConfigureMockDbSet(mockEpisodesDbSet, GetTestEpisodes());
-
-            // Add mock DbSets to mock DbContext.
-            mockDbContext.Setup(x => x.Set<Patient>()).Returns(mockPatientDbSet.Object);
-            mockDbContext.Setup(x => x.Set<Episode>()).Returns(mockEpisodesDbSet.Object);
-
-            // And finally the PatientsController.
-            _patientsController = new PatientsController(mockDbContext.Object);
+            UnityConfig.RegisterComponents();
+            _patientsController = UnityConfig.UnityContainer.Resolve<PatientsController>();
         }
         
         [TestMethod]
@@ -64,44 +50,5 @@ namespace RestApi.Tests
                 throw;
             }
         }
-
-        private void ConfigureMockDbSet<T>(Mock<DbSet<T>> mockDbSet, IQueryable<T> testData) where T : class
-        {
-            mockDbSet.As<IQueryable<T>>().Setup(m => m.Provider).Returns(testData.Provider);
-            mockDbSet.As<IQueryable<T>>().Setup(m => m.Expression).Returns(testData.Expression);
-            mockDbSet.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(testData.ElementType);
-            mockDbSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(testData.GetEnumerator());
-        }
-
-        private IQueryable<Patient> GetTestPatients()
-        {
-            return new List<Patient>
-                {
-                    new Patient
-                        {
-                            DateOfBirth = new DateTime(1972, 10, 27),
-                            FirstName = "Millicent",
-                            PatientId = 1,
-                            LastName = "Hammond",
-                            NhsNumber = "1111111111"
-                        }
-                }.AsQueryable();
-        }
-
-        private IQueryable<Episode> GetTestEpisodes()
-        {
-            return new List<Episode>
-                {
-                    new Episode
-                        {
-                            AdmissionDate = new DateTime(2014, 11, 12),
-                            Diagnosis = "Irritation of inner ear",
-                            DischargeDate = new DateTime(2014, 11, 27),
-                            EpisodeId = 1,
-                            PatientId = 1
-                        }
-                }.AsQueryable();
-        }
-        
     }
 }
