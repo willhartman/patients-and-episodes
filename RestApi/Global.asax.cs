@@ -18,6 +18,8 @@ namespace RestApi
         {
             AreaRegistration.RegisterAllAreas();
 
+            UnityConfig.RegisterComponents();
+
             WebApiConfig.Register(GlobalConfiguration.Configuration);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
         }

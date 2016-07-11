@@ -1,9 +1,10 @@
-﻿using System.Data.Entity;
+﻿using RestApi.Interfaces;
+using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace RestApi.Models
 {
-    public class PatientContext : DbContext
+    public class PatientContext : DbContext, IDbContext
     {
 
         public PatientContext()
