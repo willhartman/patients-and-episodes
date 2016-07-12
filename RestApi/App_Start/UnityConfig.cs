@@ -8,13 +8,15 @@ namespace RestApi
 {
     public static class UnityConfig
     {
+        public static IUnityContainer UnityContainer { get; set; }
+
         public static void RegisterComponents()
         {
-			var container = new UnityContainer();
+			UnityContainer = new UnityContainer();
 
-            container.RegisterType<IDbContext, PatientContext>();
-
-            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
+            UnityContainer.RegisterType<IDbContext, PatientContext>();
+            
+            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(UnityContainer);
         }
     }
 }

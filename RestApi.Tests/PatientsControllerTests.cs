@@ -1,15 +1,11 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using RestApi.Interfaces;
-using RestApi.Models;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using RestApi.Controllers;
 using System.Web.Http;
 using System.Net;
 using Microsoft.Practices.Unity;
+using RestApi.Tests.Mocks;
+using RestApi.Interfaces;
 
 namespace RestApi.Tests
 {
@@ -21,7 +17,12 @@ namespace RestApi.Tests
         [TestInitialize]
         public void Initialize()
         {
+            // Register components using existing DI container.
             UnityConfig.RegisterComponents();
+
+            // Override just the IDbContext PatientContext for testing.
+            UnityConfig.UnityContainer.RegisterInstance(MockPatientContext.Object());
+
             _patientsController = UnityConfig.UnityContainer.Resolve<PatientsController>();
         }
         
